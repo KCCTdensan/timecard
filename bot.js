@@ -15,8 +15,6 @@ d_client.login(conf.bot.discord.token)
 
 module.exports = {
     event: {
-        discord: {
-            msg: discordMsgEvent
-        }
+        discord: discordMsgEvent
     }
 }

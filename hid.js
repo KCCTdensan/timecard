@@ -49,8 +49,6 @@ device.on('data', data => {
 
 module.exports = {
     event: {
-        input: {
-            scanner: hidInputEvent
-        }
+        scanner: hidInputEvent
     }
 }
