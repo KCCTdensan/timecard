@@ -1,13 +1,11 @@
 const conf = require('./config.json')
-const baseClasses = require('./baseClasses')
-const Db = require('./db')
-const bot = require('./bot')
-const hid = require('./hid')
 
-const db = new Db.Sqlite(conf.db.dbFile)
+const HID = require('node-hid')
+
+const { EventEmitter } = require("events")
+const hidInputEvent = new EventEmitter()
+
 const device = new HID.HID(conf.scanner.path)
-
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 /*  KEY CODE
     0x1e : 1
@@ -25,8 +23,9 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 let hidInputStr = ''
 let hidInputEnd = false
+
 device.on('data', data => {
-    const newData = data
+    hidInputStr += data
         .filter(val => val != 0x00)
         .map(val => {
             if (0x1d < val && val < 0x27) {
@@ -40,9 +39,18 @@ device.on('data', data => {
         })
         .join('')
         .slice(0, -1)
-    hidInputStr += newData
+
+    if (hidInputEnd) {
+        hidInputEvent.emit('input', hidInputStr)
+        hidInputStr = ''
+        hidInputEnd = false
+    }
 })
 
-bot.event.discord.msg.on('message', async msg => {
-    console.log(msg)
-})
+module.exports = {
+    event: {
+        input: {
+            scanner: hidInputEvent
+        }
+    }
+}
