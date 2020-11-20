@@ -1,0 +1,13 @@
+{
+    "db": {
+        "dbFile": "./main.db"
+    },
+    "scanner": {
+        "path": "/dev/xxxx"
+    },
+    "bot": {
+        "discord": {
+            "token": "xxxxxxxxxxxxxxxx"
+        }
+    }
+}
