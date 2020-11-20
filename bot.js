@@ -6,8 +6,8 @@ const d_client = new Discord.Client()
 const { EventEmitter } = require("events")
 const discordMsgEvent = new EventEmitter()
 
-const sendMsg = async (text, channel=conf.discord.channel) => {
-    await client.channels.cache.get(channel).send(text)
+const sendMsg = async (text, channel=conf.bot.discord.channel) => {
+    await d_client.channels.cache.get(channel).send(text)
 }
 
 d_client.on('message', msg => {
