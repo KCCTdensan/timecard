@@ -7,7 +7,8 @@
     },
     "bot": {
         "discord": {
-            "token": "xxxxxxxxxxxxxxxx"
+            "token": "xxxxxxxxxxxxxxxx",
+            "channel": "xxxxxxxxxxxxxxxx"
         }
     }
 }
