@@ -38,9 +38,9 @@ device.on('data', data => {
             }
         })
         .join('')
-        .slice(0, -1)
 
     if (hidInputEnd) {
+        hidInputStr = hidInputStr.slice(0, -1)
         hidInputEvent.emit('input', hidInputStr)
         hidInputStr = ''
         hidInputEnd = false

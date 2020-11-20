@@ -5,7 +5,6 @@ const bot = require('./bot')
 const hid = require('./hid')
 
 const db = new Db.Sqlite(conf.db.dbFile)
-const device = new HID.HID(conf.scanner.path)
 
 // const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
