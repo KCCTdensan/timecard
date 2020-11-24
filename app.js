@@ -51,12 +51,22 @@ bot.event.discord.on('message', async msg => {
         case msg.content.startsWith('/updateUserJson'):
             ifArgExists(getArg('/updateUserJson'), async arg => {
                 try {
-                    const userInfo = JSON.parse(arg)
+                    const newUserInfo = JSON.parse(arg)
                     try {
-                        const user = await db.addUser(new classes.user(userInfo))
-                        await bot.sendMsg(`\`${user.id}\`を${user.course}科の${user.name}として登録しました`)
+                        const newUser = new classes.user(newUserInfo)
+                        try {
+                            try {
+                                const user = await db.addUser(newUser)
+                                await bot.sendMsg(`\`${user.id}\`を${user.course}科の${user.name}として登録しました`)
+                            } catch(err) {
+                                const user = await db.updateUser(newUser)
+                                await bot.sendMsg(`\`${user.id}\`を${user.course}科の${user.name}として更新しました`)
+                            }
+                        } catch(err) {
+                            await bot.sendMsg('サーバーでエラーが発生しました')
+                        }
                     } catch(err) {
-                        await bot.sendMsg('サーバーでエラーが発生しました')
+                        await bot.sendMsg('不正なフォーマットです。ユーザー情報を構築できませんでした。')
                     }
                 } catch(err) {
                     await bot.sendMsg('JSON解析エラーです。文法が間違っている可能性があります(※連想配列のキー名もダブルクォーテーションで囲う必要があります)')

@@ -1,7 +1,11 @@
 class user {
     constructor(...info) {
         let id, name, course
-        if (typeof info[0] === 'object') {
+        if (Array.isArray(info[0])) {
+            id = info[0][0]
+            name = info[0][1]
+            course = info[0][2]
+        } else if (typeof info[0] === 'object') {
             id = info[0].id
             name = info[0].name
             course = info[0].course

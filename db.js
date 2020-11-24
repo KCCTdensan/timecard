@@ -79,13 +79,12 @@ class Sqlite {
         await this.run(`INSERT OR REPLACE INTO ${userTable}(${keys.join(',')}) VALUES($${keys.join(',$')})`, values)
         return new classes.user(user)
     }
-    async addUser(user) {
-        if (await this.getUser(user)) throw 'The user exists.'
+    async updateUser(user) {
         return await this.updateUserDb(user)
     }
-    async updateUser(user) {
-        if (! await this.getUser(user)) throw 'The user does not exists.'
-        return await this.updateUserDb(user)
+    async addUser(user) {
+        if (await this.getUser(user)) throw 'The user exists.'
+        return await this.updateUser(user)
     }
     async updateStatus(user, newStatus) {
         if (! await this.getUser(user)) throw 'The user does not exists.'
