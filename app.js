@@ -1,5 +1,5 @@
 const conf = require('./config.json')
-const baseClasses = require('./baseClasses')
+const classes = require('./classes')
 const Db = require('./db')
 const bot = require('./bot')
 const hid = require('./hid')
@@ -12,15 +12,15 @@ hid.event.scanner.on('input', async inputStr => {
     console.log(`scanner: ${inputStr}`)
     try {
         const user = await db.getUser({id: inputStr})
-        const status = new baseClasses.userStatus(user)
+        const status = new classes.userStatus(user)
         await bot.sendMsg(`${user.course}科の${user.name}が${status.inRoom ? '入室' : '退室'}しました`)
     } catch(err) {
-        const user = new baseClasses.user({
+        const user = new classes.user({
             id: inputStr,
             name: 'Unknown',
             course: 'Unknown'
         })
-        const status = new baseClasses.userStatus(user)
+        const status = new classes.userStatus(user)
         await bot.sendMsg(`データベースに登録されていないユーザー(\`${inputStr}\`)が${status.inRoom ? '入室': '退室'}しました`)
     }
 })

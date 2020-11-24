@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose()
-const baseClasses = require('./baseClasses')
+const classes = require('./classes')
 
 const userTable = 'person'
 const statusTable = 'status'
@@ -54,7 +54,7 @@ class Sqlite {
         if (! id) throw 'User id is not valid.'
         const row = await this.get(`SELECT * FROM ${userTable} WHERE id=?`, id)
         if (row) {
-            return new baseClasses.user(row)
+            return new classes.user(row)
         } else {
             return null
         }
@@ -77,7 +77,7 @@ class Sqlite {
             values['$course'] = user.course
         }
         await this.run(`INSERT OR REPLACE INTO ${userTable}(${keys.join(',')}) VALUES($${keys.join(',$')})`, values)
-        return new baseClasses.user(user)
+        return new classes.user(user)
     }
     async addUser(user) {
         if (await this.getUser(user)) throw 'The user exists.'
