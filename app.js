@@ -25,6 +25,18 @@ hid.event.scanner.on('input', async inputStr => {
     }
 })
 
+const cIsMsgAuthorInTheRole => msg => async roleId => {
+    for (const [ , role ] of (await msg.guild.roles.fetch()).cache()) {
+        if (role.id == roleId) {
+            for (const [ id, ] of (await role.members)) {
+                if (msg.author.id == roleId) {
+                    return true
+                }
+            }
+        }
+    }
+    return false
+}
 const cGetCmdArg = text => cmdName =>
     text.startsWith(cmdName) ?
     text.replace((text.match(new RegExp(`^${cmdName}\\ +`)) || [])[0] || cmdName, '') :
@@ -34,6 +46,8 @@ bot.event.discord.on('message', async msg => {
     console.log(`discord: ${msg.content}`)
     if (! msg.content) return
 
+
+    const isRoleMember = cIsMsgAuthorInTheRole(msg)
     const getArg = cGetCmdArg(msg.content)
     const ifArgExists = async (arg, func) => {
         if (! arg) {
@@ -49,6 +63,10 @@ bot.event.discord.on('message', async msg => {
             bot.sendMsg('未実装。申し訳無い')
 
         case msg.content.startsWith('/updateUserJson'):
+            if (await isRoleMember(conf.bot.discord.roles.admin)) {
+                await bot.sendMsg('あなたはこの操作を行う権限がありません。サーバーの管理者に連絡してください。')
+                break
+            }
             ifArgExists(getArg('/updateUserJson'), async arg => {
                 try {
                     const newUserInfo = JSON.parse(arg)
