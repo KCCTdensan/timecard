@@ -27,18 +27,19 @@ hid.event.scanner.on('input', async inputStr => {
 
 const cGetCmdArg = text => cmdName =>
     text.startsWith(cmdName) ?
-    text.replace(text.match(new RegExp(`/^${cmdName}\\ +/`), '')) :
+    text.replace((text.match(new RegExp(`^${cmdName}\\ +`)) || [])[0] || cmdName, '') :
     false
 
 bot.event.discord.on('message', async msg => {
     console.log(`discord: ${msg.content}`)
+    if (! msg.content) return
 
     const getArg = cGetCmdArg(msg.content)
     const ifArgExists = async (arg, func) => {
         if (! arg) {
             await bot.sendMsg('有効な引数が見つかりません。コマンドの使用方法は`/help`で確認できます。')
         } else {
-            return await func()
+            return await func(arg)
         }
     }
 
@@ -47,12 +48,12 @@ bot.event.discord.on('message', async msg => {
         case /^\/help.*$/.test(msg.content):
             bot.sendMsg('未実装。申し訳無い')
 
-        case getArg('/updateUserJson'):
-            ifArgExists(getArg('/updateUserJson'), await () => {
+        case msg.content.startsWith('/updateUserJson'):
+            ifArgExists(getArg('/updateUserJson'), async arg => {
                 try {
                     const userInfo = JSON.parse(arg)
                     try {
-                        const user = await db.addUser(userInfo)
+                        const user = await db.addUser(new classes.user(userInfo))
                         await bot.sendMsg(`\`${user.id}\`を${user.course}科の${user.name}として登録しました`)
                     } catch(err) {
                         await bot.sendMsg('サーバーでエラーが発生しました')
