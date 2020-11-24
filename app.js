@@ -25,17 +25,42 @@ hid.event.scanner.on('input', async inputStr => {
     }
 })
 
+const cGetCmdArg = text => cmdName =>
+    text.startsWith(cmdName) ?
+    text.replace(text.match(new RegExp(`/^${cmdName}\\ +/`), '')) :
+    false
+
 bot.event.discord.on('message', async msg => {
-    console.log(`message: ${msg.content}`)
-    try {
-        const userInfo = JSON.parse(msg.content.replace(msg.content.match(/^\/addUser\ +/), ''))
-        try {
-            const user = await db.addUser(userInfo)
-            await bot.sendMsg(`\`${user.id}\`を${user.course}科の${user.name}として登録しました`)
-        } catch(err) {
-            await bot.sendMsg('サーバーでエラーが発生しました')
+    console.log(`discord: ${msg.content}`)
+
+    const getArg = cGetCmdArg(msg.content)
+    const ifArgExists = async (arg, func) => {
+        if (! arg) {
+            await bot.sendMsg('有効な引数が見つかりません。コマンドの使用方法は`/help`で確認できます。')
+        } else {
+            return await func()
         }
-    } catch(err) {
-        await bot.sendMsg('JSON解析エラーです。文法が間違っている可能性があります(※連想配列のキー名もダブルクォーテーションで囲う必要があります)')
+    }
+
+    switch (true) {
+
+        case /^\/help.*$/.test(msg.content):
+            bot.sendMsg('未実装。申し訳無い')
+
+        case getArg('/updateUserJson'):
+            ifArgExists(getArg('/updateUserJson'), await () => {
+                try {
+                    const userInfo = JSON.parse(arg)
+                    try {
+                        const user = await db.addUser(userInfo)
+                        await bot.sendMsg(`\`${user.id}\`を${user.course}科の${user.name}として登録しました`)
+                    } catch(err) {
+                        await bot.sendMsg('サーバーでエラーが発生しました')
+                    }
+                } catch(err) {
+                    await bot.sendMsg('JSON解析エラーです。文法が間違っている可能性があります(※連想配列のキー名もダブルクォーテーションで囲う必要があります)')
+                }
+            })
+            break
     }
 })
