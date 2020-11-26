@@ -63,7 +63,7 @@ bot.event.discord.on('message', async msg => {
             bot.sendMsg('未実装。申し訳無い')
 
         case msg.content.startsWith('/updateUserJson'):
-            if (await isRoleMember(conf.bot.discord.roles.admin)) {
+            if (! (await isRoleMember(conf.bot.discord.roles.admin))) {
                 await bot.sendMsg('あなたはこの操作を行う権限がありません。サーバーの管理者に連絡してください。')
                 break
             }
