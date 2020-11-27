@@ -10,20 +10,18 @@ class Sqlite {
         if (! dbFilePath) throw 'The database file path is not valid.'
         try {
             this.db = new sqlite.Database(dbFilePath)
-            const db = this.db
-            db.serialize(() => {
-                db.run(`CREATE TABLE IF NOT EXISTS ${userTable}(id INTEGER UNIQUE, name TEXT, course TEXT)`)
-                db.run(`CREATE TABLE IF NOT EXISTS ${statusTable}(d_id TEXT UNIQUE, prev_d_id TEXT, id INTEGER, updated TEXT, in_room INTEGER)`)
+            this.db.serialize(() => {
+                this.db.run(`CREATE TABLE IF NOT EXISTS ${userTable}(id INTEGER UNIQUE, name TEXT, course TEXT)`)
+                this.db.run(`CREATE TABLE IF NOT EXISTS ${statusTable}(d_id TEXT UNIQUE, prev_d_id TEXT, id INTEGER, updated TEXT, in_room INTEGER)`)
             })
         } catch(err) {
             throw err
         }
     }
     asyncSqlMethod = func => {
-        const db = this.db
         return new Promise((resolve, reject) => {
-            db.serialize(() => {
-                func(db, (err, res) => {
+            this.db.serialize(() => {
+                func(this.db, (err, res) => {
                     if (err) {
                         reject(err)
                     } else {
@@ -34,20 +32,17 @@ class Sqlite {
         })
     }
     run(sql, values=[]) {
-        const asyncSqlMethod = this.asyncSqlMethod
-        return asyncSqlMethod((db, callback) => {
+        return this.asyncSqlMethod((db, callback) => {
             db.run(sql, values, callback)
         })
     }
     get(sql, values=[]) {
-        const asyncSqlMethod = this.asyncSqlMethod
-        return asyncSqlMethod((db, callback) => {
+        return this.asyncSqlMethod((db, callback) => {
             db.get(sql, values, callback)
         })
     }
     all(sql, values=[]) {
-        const asyncSqlMethod = this.asyncSqlMethod
-        return asyncSqlMethod((db, callback) => {
+        return this.asyncSqlMethod((db, callback) => {
             db.all(sql, values, callback)
         })
     }
@@ -55,9 +50,8 @@ class Sqlite {
         this.db.close()
     }
     async getUser({ id }) {
-        const get = this.get
         if (! id) throw 'User id is not valid.'
-        const row = await get(`SELECT * FROM ${userTable} WHERE id=?`, id)
+        const row = await this.get(`SELECT * FROM ${userTable} WHERE id=?`, id)
         if (row) {
             return new classes.user(row)
         } else {
@@ -65,8 +59,6 @@ class Sqlite {
         }
     }
     async updateUser(user) {
-        const run = this.run
-        const updateStatus = this.updateStatus
         const keys = []
         const values = {}
         if (! user.id) {
@@ -83,20 +75,17 @@ class Sqlite {
             keys.push('course')
             values['$course'] = user.course
         }
-        await run(`INSERT OR REPLACE INTO ${userTable}(${keys.join(',')}) VALUES($${keys.join(',$')})`, values)
-        await updateStatus(user)
+        await this.run(`INSERT OR REPLACE INTO ${userTable}(${keys.join(',')}) VALUES($${keys.join(',$')})`, values)
+        await this.updateStatus(user)
         return new classes.user(user)
     }
     async addUser(user) {
-        const getUser = this.getUser
-        const updateUser = this.updateUser
-        if (await getUser(user)) throw 'The user exists.'
-        return await updateUser(user)
+        if (await this.getUser(user)) throw 'The user exists.'
+        return await this.updateUser(user)
     }
     async getStatus({ id }) {
-        const get = this.get
         if (! id) throw 'User id is not valid.'
-        const row = await get(`SELECT * FROM ${statusTable} WHERE id=?`, id)
+        const row = await this.get(`SELECT * FROM ${statusTable} WHERE id=?`, id)
         if (row) {
             return new classes.userStatus({
                 updated: new Date(row.updated),
@@ -107,8 +96,6 @@ class Sqlite {
         }
     }
     async updateStatus(user) {
-        const get = this.get
-        const run = this.run
         const keys = []
         const values = {}
         if (! user.id) {
@@ -133,17 +120,17 @@ class Sqlite {
         keys.push('d_id')
         while (true) {
             const hex = rndHex(6)
-            if (! (await get(`SELECT d_id FROM ${statusTable} WHERE d_id=?`, hex))) {
+            if (! (await this.get(`SELECT d_id FROM ${statusTable} WHERE d_id=?`, hex))) {
                 values['$d_id'] = hex
                 break
             }
         }
-        const prevRow = await get(`SELECT * FROM ${statusTable} WHERE id=?`, user.id)
+        const prevRow = await this.get(`SELECT * FROM ${statusTable} WHERE id=?`, user.id)
         if (prevRow) {
             keys.push('prev_d_id')
             values['$prev_d_id'] = prevRow.d_id
         }
-        await run(`INSERT OR REPLACE INTO ${statusTable}(${keys.join(',')}) VALUES($${keys.join(',$')})`, values)
+        await this.run(`INSERT OR REPLACE INTO ${statusTable}(${keys.join(',')}) VALUES($${keys.join(',$')})`, values)
         return new classes.user(user)
     }
 }
