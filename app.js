@@ -14,7 +14,7 @@ hid.event.scanner.on('input', async inputStr => {
         await db.updateStatus(user)
         await bot.sendMsg(`[${user.status.updated.toLocaleString('ja')}] \`${user.course}\`科の\`${user.name}\`が${user.status.inRoom ? '入室' : '退室'}しました`)
     } catch(err) {
-        await bot.sendMsg(`${user.status.updated.toLocaleString('ja')}] データベースに登録されていないユーザー(\`${inputStr}\`)が出入りしました`)
+        await bot.sendMsg(`${new Date().toLocaleString('ja')}] データベースに登録されていないユーザー(\`${inputStr}\`)が出入りしました`)
     }
 })
 
