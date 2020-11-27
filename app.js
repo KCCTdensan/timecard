@@ -25,11 +25,11 @@ hid.event.scanner.on('input', async inputStr => {
     }
 })
 
-const cIsMsgAuthorInTheRole => msg => async roleId => {
-    for (const [ , role ] of (await msg.guild.roles.fetch()).cache()) {
+const cIsMsgAuthorInTheRole = msg => async roleId => {
+    for (const [ , role ] of (await msg.guild.roles.fetch()).cache) {
         if (role.id == roleId) {
             for (const [ id, ] of (await role.members)) {
-                if (msg.author.id == roleId) {
+                if (msg.author.id == id) {
                     return true
                 }
             }
@@ -47,7 +47,7 @@ bot.event.discord.on('message', async msg => {
     if (! msg.content) return
 
 
-    const isRoleMember = cIsMsgAuthorInTheRole(msg)
+    const isAuthorInRole = cIsMsgAuthorInTheRole(msg)
     const getArg = cGetCmdArg(msg.content)
     const ifArgExists = async (arg, func) => {
         if (! arg) {
@@ -63,7 +63,7 @@ bot.event.discord.on('message', async msg => {
             bot.sendMsg('未実装。申し訳無い')
 
         case msg.content.startsWith('/updateUserJson'):
-            if (! (await isRoleMember(conf.bot.discord.roles.admin))) {
+            if (! (await isAuthorInRole(conf.bot.discord.roles.admin))) {
                 await bot.sendMsg('あなたはこの操作を行う権限がありません。サーバーの管理者に連絡してください。')
                 break
             }
