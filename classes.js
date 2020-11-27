@@ -14,7 +14,7 @@ class userStatus {
         return this
     }
     toggleInRoom() {
-        return this.updateStatus({ inRoom: (this.inRoom ? false : true) })
+        return this.update({ inRoom: (this.inRoom ? false : true) })
     }
 }
 

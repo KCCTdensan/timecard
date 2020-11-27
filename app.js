@@ -12,15 +12,17 @@ hid.event.scanner.on('input', async inputStr => {
     console.log(`scanner: ${inputStr}`)
     try {
         const user = await db.getUser({id: inputStr})
-        await db.updateStatus(user.status.toggleInRoom())
+        user.status.toggleInRoom()
+        await db.updateStatus(user)
         await bot.sendMsg(`${user.course}科の${user.name}が${user.status.inRoom ? '入室' : '退室'}しました`)
     } catch(err) {
-        const user = await db.addUser({
+        const user = new classes.user({
             id: inputStr,
             name: 'Unknown',
             course: 'Unknown'
         })
-        await db.updateStatus(user.status.toggleInRoom())
+        user.status.toggleInRoom()
+        await db.updateStatus(user)
         await bot.sendMsg(`データベースに登録されていないユーザー(\`${inputStr}\`)が${user.status.inRoom ? '入室': '退室'}しました`)
     }
 })
