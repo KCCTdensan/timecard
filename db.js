@@ -53,7 +53,9 @@ class Sqlite {
         if (! id) throw 'User id is not valid.'
         const row = await this.get(`SELECT * FROM ${userTable} WHERE id=?`, id)
         if (row) {
-            return new classes.user(row)
+            const user = new classes.user(row)
+            user.setStatus(await this.getLatestStatus({ id }))
+            return user
         } else {
             return null
         }
@@ -83,9 +85,9 @@ class Sqlite {
         if (await this.getUser(user)) throw 'The user exists.'
         return await this.updateUser(user)
     }
-    async getStatus({ id }) {
+    async getLatestStatus({ id }) {
         if (! id) throw 'User id is not valid.'
-        const row = await this.get(`SELECT * FROM ${statusTable} WHERE id=?`, id)
+        const row = await this.get(`SELECT * FROM ${statusTable} WHERE id=? ORDER BY updated DESC`, id)
         if (row) {
             return new classes.userStatus({
                 updated: new Date(row.updated),
@@ -108,7 +110,7 @@ class Sqlite {
             throw 'Status updated date is not valid.'
         } else {
             keys.push('updated')
-            values['$updated'] = user.status.updated
+            values['$updated'] = user.status.updated.getTime()
         }
         if (user.status.inRoom === true) {
             keys.push('in_room')
