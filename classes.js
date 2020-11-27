@@ -8,11 +8,13 @@ class userStatus {
             this.updated = new Date()
         }
     }
+
     update(info) {
         if (info.inRoom === true || info.inRoom === false) this.inRoom = info.inRoom
         this.updated = new Date()
         return this
     }
+
     toggleInRoom() {
         return this.update({ inRoom: (this.inRoom ? false : true) })
     }
@@ -21,6 +23,7 @@ class userStatus {
 class user {
     constructor(...info) {
         let id, name, course
+
         if (Array.isArray(info[0])) {
             id = info[0][0]
             name = info[0][1]
@@ -34,7 +37,9 @@ class user {
             name = info[1]
             course = info[2]
         }
+
         if (! id) throw 'User id is not valid.'
+
         if (id && name && course) {
             this.id = id
             this.name = name
@@ -44,8 +49,9 @@ class user {
             throw 'There are missing part(s).'
         }
     }
+
     setStatus(status) {
-        if (true) {
+        if (status) {
             this.status = new userStatus(status)
         } else {
             throw 'There are missing part(s).'

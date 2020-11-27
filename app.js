@@ -6,24 +6,15 @@ const hid = require('./hid')
 
 const db = new Db.Sqlite(conf.db.dbFile)
 
-// const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-
 hid.event.scanner.on('input', async inputStr => {
     console.log(`scanner: ${inputStr}`)
     try {
         const user = await db.getUser({id: inputStr})
         user.status.toggleInRoom()
         await db.updateStatus(user)
-        await bot.sendMsg(`${user.course}科の${user.name}が${user.status.inRoom ? '入室' : '退室'}しました`)
+        await bot.sendMsg(`\`[${user.status.updated.toLocaleString('ja')}]\`: ${user.course}科の${user.name}が${user.status.inRoom ? '入室' : '退室'}しました`)
     } catch(err) {
-        const user = new classes.user({
-            id: inputStr,
-            name: 'Unknown',
-            course: 'Unknown'
-        })
-        user.status.toggleInRoom()
-        await db.updateStatus(user)
-        await bot.sendMsg(`データベースに登録されていないユーザー(\`${inputStr}\`)が${user.status.inRoom ? '入室': '退室'}しました`)
+        await bot.sendMsg(`データベースに登録されていないユーザー(\`${inputStr}\`)が出入りしました`)
     }
 })
 
@@ -39,6 +30,7 @@ const cIsMsgAuthorInTheRole = msg => async roleId => {
     }
     return false
 }
+
 const cGetCmdArg = text => cmdName =>
     text.startsWith(cmdName) ?
     text.replace((text.match(new RegExp(`^${cmdName}\\ +`)) || [])[0] || cmdName, '') :
@@ -82,13 +74,13 @@ bot.event.discord.on('message', async msg => {
                                 await bot.sendMsg(`\`${user.id}\`を${user.course}科の${user.name}として更新しました`)
                             }
                         } catch(err) {
-                            await bot.sendMsg('サーバーでエラーが発生しました: ' + err)
+                            await bot.sendMsg(`サーバーでエラーが発生しました:\n\`\`\` ${err} \`\`\``)
                         }
                     } catch(err) {
                         await bot.sendMsg('不正なフォーマットです。ユーザー情報を構築できませんでした。')
                     }
                 } catch(err) {
-                    await bot.sendMsg('JSON解析エラーです。文法が間違っている可能性があります(※連想配列のキー名もダブルクォーテーションで囲う必要があります)')
+                    await bot.sendMsg('JSON構文エラーです。文法が間違っています(※数値以外の値はダブルクォーテーションで囲う必要があります)')
                 }
             })
             break

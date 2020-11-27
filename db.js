@@ -18,6 +18,7 @@ class Sqlite {
             throw err
         }
     }
+
     asyncSqlMethod = func => {
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
@@ -46,9 +47,11 @@ class Sqlite {
             db.all(sql, values, callback)
         })
     }
+
     close() {
         this.db.close()
     }
+
     async getUser({ id }) {
         if (! id) throw 'User id is not valid.'
         const row = await this.get(`SELECT * FROM ${userTable} WHERE id=?`, id)
@@ -60,33 +63,42 @@ class Sqlite {
             return null
         }
     }
+
     async updateUser(user) {
         const keys = []
         const values = {}
+
         if (! user.id) {
             throw 'User id is not valid.'
         } else {
             keys.push('id')
             values['$id'] = user.id
         }
+
         if (user.name) {
             keys.push('name')
             values['$name'] = user.name
         }
+
         if (user.course) {
             keys.push('course')
             values['$course'] = user.course
         }
+        
         await this.run(`INSERT OR REPLACE INTO ${userTable}(${keys.join(',')}) VALUES($${keys.join(',$')})`, values)
         await this.updateStatus(user)
+
         return new classes.user(user)
     }
+
     async addUser(user) {
         if (await this.getUser(user)) throw 'The user exists.'
         return await this.updateUser(user)
     }
+
     async getLatestStatus({ id }) {
         if (! id) throw 'User id is not valid.'
+
         const row = await this.get(`SELECT * FROM ${statusTable} WHERE id=? ORDER BY updated DESC`, id)
         if (row) {
             return new classes.userStatus({
@@ -97,21 +109,25 @@ class Sqlite {
             return null
         }
     }
+
     async updateStatus(user) {
         const keys = []
         const values = {}
+
         if (! user.id) {
             throw 'User id is not valid.'
         } else {
             keys.push('id')
             values['$id'] = user.id
         }
+
         if (! user.status.updated) {
             throw 'Status updated date is not valid.'
         } else {
             keys.push('updated')
             values['$updated'] = user.status.updated.getTime()
         }
+
         if (user.status.inRoom === true) {
             keys.push('in_room')
             values['$in_room'] = 1
@@ -119,6 +135,7 @@ class Sqlite {
             keys.push('in_room')
             values['$in_room'] = 0
         }
+
         keys.push('d_id')
         while (true) {
             const hex = rndHex(6)
@@ -127,12 +144,15 @@ class Sqlite {
                 break
             }
         }
+
         const prevRow = await this.get(`SELECT * FROM ${statusTable} WHERE id=?`, user.id)
         if (prevRow) {
             keys.push('prev_d_id')
             values['$prev_d_id'] = prevRow.d_id
         }
+
         await this.run(`INSERT OR REPLACE INTO ${statusTable}(${keys.join(',')}) VALUES($${keys.join(',$')})`, values)
+
         return new classes.user(user)
     }
 }
