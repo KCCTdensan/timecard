@@ -80,7 +80,7 @@ bot.event.discord.on('message', async msg => {
                                 await bot.sendMsg(`\`${user.id}\`を${user.course}科の${user.name}として更新しました`)
                             }
                         } catch(err) {
-                            await bot.sendMsg('サーバーでエラーが発生しました')
+                            await bot.sendMsg('サーバーでエラーが発生しました: ' + err)
                         }
                     } catch(err) {
                         await bot.sendMsg('不正なフォーマットです。ユーザー情報を構築できませんでした。')

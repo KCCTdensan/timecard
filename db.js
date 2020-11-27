@@ -34,17 +34,20 @@ class Sqlite {
         })
     }
     run(sql, values=[]) {
-        return this.asyncSqlMethod((db, callback) => {
+        const asyncSqlMethod = this.asyncSqlMethod
+        return asyncSqlMethod((db, callback) => {
             db.run(sql, values, callback)
         })
     }
     get(sql, values=[]) {
-        return this.asyncSqlMethod((db, callback) => {
+        const asyncSqlMethod = this.asyncSqlMethod
+        return asyncSqlMethod((db, callback) => {
             db.get(sql, values, callback)
         })
     }
     all(sql, values=[]) {
-        return this.asyncSqlMethod((db, callback) => {
+        const asyncSqlMethod = this.asyncSqlMethod
+        return asyncSqlMethod((db, callback) => {
             db.all(sql, values, callback)
         })
     }
@@ -52,8 +55,9 @@ class Sqlite {
         this.db.close()
     }
     async getUser({ id }) {
+        const get = this.get
         if (! id) throw 'User id is not valid.'
-        const row = await this.get(`SELECT * FROM ${userTable} WHERE id=?`, id)
+        const row = await get(`SELECT * FROM ${userTable} WHERE id=?`, id)
         if (row) {
             return new classes.user(row)
         } else {
@@ -61,6 +65,8 @@ class Sqlite {
         }
     }
     async updateUser(user) {
+        const run = this.run
+        const updateStatus = this.updateStatus
         const keys = []
         const values = {}
         if (! user.id) {
@@ -77,27 +83,32 @@ class Sqlite {
             keys.push('course')
             values['$course'] = user.course
         }
-        await this.run(`INSERT OR REPLACE INTO ${userTable}(${keys.join(',')}) VALUES($${keys.join(',$')})`, values)
-        await this.updateStatus(user)
+        await run(`INSERT OR REPLACE INTO ${userTable}(${keys.join(',')}) VALUES($${keys.join(',$')})`, values)
+        await updateStatus(user)
         return new classes.user(user)
     }
     async addUser(user) {
-        if (await this.getUser(user)) throw 'The user exists.'
-        return await this.updateUser(user)
+        const getUser = this.getUser
+        const updateUser = this.updateUser
+        if (await getUser(user)) throw 'The user exists.'
+        return await updateUser(user)
     }
     async getStatus({ id }) {
+        const get = this.get
         if (! id) throw 'User id is not valid.'
-        const row = await this.get(`SELECT * FROM ${statusTable} WHERE id=?`, id)
+        const row = await get(`SELECT * FROM ${statusTable} WHERE id=?`, id)
         if (row) {
             return new classes.userStatus({
-                updated = new Date(row.updated),
-                inRoom = row.in_room == 1 ? true : false
+                updated: new Date(row.updated),
+                inRoom: row.in_room == 1 ? true : false
             })
         } else {
             return null
         }
     }
     async updateStatus(user) {
+        const get = this.get
+        const run = this.run
         const keys = []
         const values = {}
         if (! user.id) {
@@ -120,18 +131,19 @@ class Sqlite {
             values['$in_room'] = 0
         }
         keys.push('d_id')
-        values['$d_id'] = (() => {
-            while (true) {
-                const hex = rndHex(6)
-                if (! (await this.get(`SELECT d_id FROM ${statusTable} WHERE d_id=?`, hex))) return hex
+        while (true) {
+            const hex = rndHex(6)
+            if (! (await get(`SELECT d_id FROM ${statusTable} WHERE d_id=?`, hex))) {
+                values['$d_id'] = hex
+                break
             }
-        })()
-        const prevRow = await this.get(`SELECT * FROM ${statusTable} WHERE id=?`, user.id)
+        }
+        const prevRow = await get(`SELECT * FROM ${statusTable} WHERE id=?`, user.id)
         if (prevRow) {
             keys.push('prev_d_id')
             values['$prev_d_id'] = prevRow.d_id
         }
-        await this.run(`INSERT OR REPLACE INTO ${statusTable}(${keys.join(',')}) VALUES($${keys.join(',$')})`, values)
+        await run(`INSERT OR REPLACE INTO ${statusTable}(${keys.join(',')}) VALUES($${keys.join(',$')})`, values)
         return new classes.user(user)
     }
 }
