@@ -12,16 +12,16 @@ hid.event.scanner.on('input', async inputStr => {
     console.log(`scanner: ${inputStr}`)
     try {
         const user = await db.getUser({id: inputStr})
-        const status = new classes.userStatus(user)
-        await bot.sendMsg(`${user.course}科の${user.name}が${status.inRoom ? '入室' : '退室'}しました`)
+        await db.updateStatus(user.status.toggleInRoom())
+        await bot.sendMsg(`${user.course}科の${user.name}が${user.status.inRoom ? '入室' : '退室'}しました`)
     } catch(err) {
-        const user = new classes.user({
+        const user = await db.addUser({
             id: inputStr,
             name: 'Unknown',
             course: 'Unknown'
         })
-        const status = new classes.userStatus(user)
-        await bot.sendMsg(`データベースに登録されていないユーザー(\`${inputStr}\`)が${status.inRoom ? '入室': '退室'}しました`)
+        await db.updateStatus(user.status.toggleInRoom())
+        await bot.sendMsg(`データベースに登録されていないユーザー(\`${inputStr}\`)が${user.status.inRoom ? '入室': '退室'}しました`)
     }
 })
 
@@ -45,7 +45,6 @@ const cGetCmdArg = text => cmdName =>
 bot.event.discord.on('message', async msg => {
     console.log(`discord: ${msg.content}`)
     if (! msg.content) return
-
 
     const isAuthorInRole = cIsMsgAuthorInTheRole(msg)
     const getArg = cGetCmdArg(msg.content)

@@ -1,3 +1,23 @@
+class userStatus {
+    constructor(status) {
+        if (status) {
+            this.inRoom = status.inRoom === true ? true : false
+            this.updated = status.updated || new Date()
+        } else {
+            this.inRoom = false
+            this.updated = new Date()
+        }
+    }
+    update(info) {
+        if (info.inRoom === true || info.inRoom === false) this.inRoom = info.inRoom
+        this.updated = new Date()
+        return this
+    }
+    toggleInRoom() {
+        return this.updateStatus({ inRoom: (this.inRoom ? false : true) })
+    }
+}
+
 class user {
     constructor(...info) {
         let id, name, course
@@ -19,19 +39,18 @@ class user {
             this.id = id
             this.name = name
             this.course = course
+            this.status = new userStatus()
         } else {
             throw 'There are missing part(s).'
         }
     }
-}
-
-class userStatus {
-    constructor(info) {
-        this.user = new user(info)
-        this.inRoom = false
-        this.updated = new Date()
+    setStatus(status) {
+        if (true) {
+            this.status = new userStatus(status)
+        } else {
+            throw 'There are missing part(s).'
+        }
     }
-    // update() {}
 }
 
 module.exports = { user, userStatus }
