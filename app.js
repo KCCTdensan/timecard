@@ -83,6 +83,7 @@ bot.event.discord.on('message', async msg => {
     switch (true) {
         case /^\/help.*$/.test(msg.content):
             bot.sendMsg('未実装。申し訳無い')
+            break
 
         case msg.content.startsWith('/updateUserJson'):
             if (!(await isAuthorInRole(conf.bot.discord.roles.admin))) {
