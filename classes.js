@@ -38,7 +38,7 @@ class user {
             course = info[2]
         }
 
-        if (! id) throw 'User id is not valid.'
+        if (! /^[0-9]{6}$/.test(id)) throw 'User id is not valid.'
 
         if (id && name && course) {
             this.id = id
