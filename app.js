@@ -10,9 +10,16 @@ hid.event.scanner.on('input', async inputStr => {
     console.log(`scanner: ${inputStr}`)
     try {
         const user = await db.getUser({id: inputStr})
-        user.status.toggleInRoom()
-        await db.updateStatus(user)
-        await bot.sendMsg(`[${user.status.updated.toLocaleString('ja')}] \`${user.course}\`科の\`${user.name}\`が${user.status.inRoom ? '入室' : '退室'}しました`)
+        if (Date.now() - user.status.updated.getTime() > 60 * 1000) {
+            user.status.toggleInRoom()
+            const lastStatus = (await getLatestStatus(user)).status
+            const newStatus = (await db.updateUserStatus(user)).status
+            if (newStatus.inRoom) {
+                await bot.sendMsg(`[${newStatus.updated.toLocaleString('ja')}] \`${user.course}\`科の\`${user.name}\`が入室しました`)
+            } else {
+                await bot.sendMsg(`[${newStatus.updated.toLocaleString('ja')}] \`${user.course}\`科の\`${user.name}\`が退室しました (${newStatus.updated - lastStatus.updated /(1000*60)}分)`)
+            }
+        }
     } catch(err) {
         await bot.sendMsg(`${new Date().toLocaleString('ja')}] データベースに登録されていないユーザー(\`${inputStr}\`)が出入りしました`)
     }

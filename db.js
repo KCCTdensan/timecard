@@ -110,7 +110,7 @@ class Sqlite {
         }
     }
 
-    async updateStatus(user) {
+    async updateUserStatus(user) {
         const keys = []
         const values = {}
 
