@@ -14,19 +14,22 @@ hid.event.scanner.on('input', async inputStr => {
         if (lastStatus && Date.now() - lastStatus.updated.getTime() < 10000)
             return
         user.status.toggleInRoom()
-        const newStatus = (await db.updateUserStatus(user)).status
-        if (newStatus.inRoom) {
+        await db.updateUserStatus(user)
+        if (user.status.inRoom) {
             await bot.sendMsg(
-                `[${newStatus.updated.toLocaleString('ja')}] \`${
+                `[${user.status.updated.toLocaleString('ja')}] \`${
                     user.course
                 }\`科の\`${user.name}\`が入室しました`
             )
         } else {
             await bot.sendMsg(
-                `[${newStatus.updated.toLocaleString('ja')}] \`${
+                `[${user.status.updated.toLocaleString('ja')}] \`${
                     user.course
                 }\`科の\`${user.name}\`が退室しました (${
-                    newStatus.updated - lastStatus.updated / 60000
+                    Math.round(
+                        ((user.status.updated - lastStatus.updated) * 100) /
+                            60000
+                    ) / 100
                 }分)`
             )
         }
