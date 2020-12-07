@@ -1,19 +1,19 @@
 {
-  "name": "timecard",
-  "version": "0.1.0",
-  "main": "app.js",
-  "scripts": {
-    "fmt": "prettier -w './**/*.{js,json}'"
-  },
-  "author": "",
-  "license": "MIT",
-  "description": "",
-  "devDependencies": {
-    "prettier": "^2.2.1"
-  },
-  "dependencies": {
-    "discord.js": "^12.4.1",
-    "node-hid": "^1.3.2",
-    "sqlite3": "^5.0.0"
-  }
+    "name": "timecard",
+    "version": "0.1.0",
+    "main": "app.js",
+    "scripts": {
+        "fmt": "prettier -w './**/*.{js,json}'"
+    },
+    "author": "",
+    "license": "MIT",
+    "description": "",
+    "devDependencies": {
+        "prettier": "^2.2.1"
+    },
+    "dependencies": {
+        "discord.js": "^12.4.1",
+        "node-hid": "^1.3.2",
+        "sqlite3": "^5.0.0"
+    }
 }

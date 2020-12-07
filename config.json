@@ -1,17 +1,17 @@
 {
-  "db": {
-    "dbFile": "./main.db"
-  },
-  "scanner": {
-    "path": "/dev/xxxx"
-  },
-  "bot": {
-    "discord": {
-      "token": "xxxxxxxxxxxxxxxx",
-      "channel": "xxxxxxxxxxxxxxxx",
-      "roles": {
-        "admin": "xxxxxxxxxxxxxxxx"
-      }
+    "db": {
+        "dbFile": "./main.db"
+    },
+    "scanner": {
+        "path": "/dev/xxxx"
+    },
+    "bot": {
+        "discord": {
+            "token": "xxxxxxxxxxxxxxxx",
+            "channel": "xxxxxxxxxxxxxxxx",
+            "roles": {
+                "admin": "xxxxxxxxxxxxxxxx"
+            }
+        }
     }
-  }
 }
