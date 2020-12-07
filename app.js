@@ -10,7 +10,7 @@ hid.event.scanner.on('input', async inputStr => {
     console.log(`scanner: ${inputStr}`)
     try {
         const user = await db.getUser({ id: inputStr })
-        const lastStatus = (await getLatestStatus(user)).status
+        const lastStatus = await db.getLatestStatus(user)
         if (lastStatus && Date.now() - lastStatus.updated.getTime() < 10000)
             return
         user.status.toggleInRoom()
@@ -31,8 +31,9 @@ hid.event.scanner.on('input', async inputStr => {
             )
         }
     } catch (err) {
+        console.error(err)
         await bot.sendMsg(
-            `${new Date().toLocaleString(
+            `[${new Date().toLocaleString(
                 'ja'
             )}] データベースに登録されていないユーザー(\`${inputStr}\`)が出入りしました`
         )

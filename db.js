@@ -114,7 +114,7 @@ class Sqlite {
         )
         if (row) {
             return new classes.userStatus({
-                updated: new Date(row.updated),
+                updated: new Date(row.updated * 1000),
                 inRoom: row.in_room == 1 ? true : false
             })
         } else {
@@ -137,7 +137,9 @@ class Sqlite {
             throw 'Status updated date is not valid.'
         } else {
             keys.push('updated')
-            values['$updated'] = user.status.updated.getTime()
+            values['$updated'] = Math.round(
+                user.status.updated.getTime() / 1000
+            )
         }
 
         if (user.status.inRoom === true) {
