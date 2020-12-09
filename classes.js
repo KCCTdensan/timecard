@@ -54,6 +54,7 @@ class user {
     setStatus(status) {
         if (status) {
             this.status = new userStatus(status)
+            return this
         } else {
             throw 'There are missing part(s).'
         }
