@@ -60,12 +60,12 @@ class Sqlite {
         if (!id) throw 'User id is not valid.'
         const row = await this.get(`SELECT * FROM ${userTable} WHERE id=?`, id)
         if (row) {
-            const { id } = row
-            const name = Buffer.from(row.name, 'base64').toString('utf-8')
-            const course = Buffer.from(row.course, 'base64').toString('utf-8')
-            const user = new classes.user([ id, name, course ])
-            user.setStatus(await this.getLatestStatus({ id }))
-            return user
+            const user = new classes.user({
+                id: row.id,
+                name: Buffer.from(row.name, 'base64').toString('utf-8'),
+                course: Buffer.from(row.course, 'base64').toString('utf-8')
+            })
+            return user.setStatus(await this.getLatestStatus({ id }))
         } else {
             return null
         }
