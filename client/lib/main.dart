@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:timecard/screens/home.dart';
+import 'package:timecard/pages/index.dart';
 
 void main() => runApp(const App());
 
@@ -38,7 +38,7 @@ class App extends StatelessWidget {
           ),
           initialRoute: '/',
           routes: {
-            '/': (_) => const HomePage(),
+            '/': (_) => const IndexPage(),
           },
         );
       }
