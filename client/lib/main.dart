@@ -26,23 +26,21 @@ class App extends StatelessWidget {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
     return DynamicColorBuilder(
-      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        return MaterialApp(
-          title: 'timecard',
-          theme: ThemeData(
-            useMaterial3: true,
-            colorScheme: lightDynamic ?? _defaultLightColorScheme,
-          ),
-          darkTheme: ThemeData(
-            useMaterial3: true,
-            colorScheme: darkDynamic ?? _defaultDarkColorScheme,
-          ),
-          initialRoute: '/',
-          routes: {
-            '/': (_) => const IndexPage(),
-          },
-        );
-      }
-    );
+        builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+      return MaterialApp(
+        title: 'timecard',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: lightDynamic ?? _defaultLightColorScheme,
+        ),
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          colorScheme: darkDynamic ?? _defaultDarkColorScheme,
+        ),
+        routes: {
+          '/': (_) => const IndexPage(),
+        },
+      );
+    });
   }
 }

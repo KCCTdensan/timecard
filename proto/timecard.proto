@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+service TimecardService {
+  //
+}
+
+message Event {
+  string id = 1;
+}

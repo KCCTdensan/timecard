@@ -11,8 +11,8 @@ class PersonWidget extends StatelessWidget {
         OutlinedCard(
           child: const SizedBox(
             height: 100,
-            child: Center(child:
-              ListTile(
+            child: Center(
+              child: ListTile(
                 leading: Icon(Icons.person, size: 56),
                 title: Text("asdf"),
                 trailing: Icon(Icons.edit),

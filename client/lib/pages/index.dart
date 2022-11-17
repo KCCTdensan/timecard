@@ -12,6 +12,22 @@ class IndexPage extends StatefulWidget {
   State<IndexPage> createState() => _IndexPageState();
 }
 
+class SwipePhysics extends ScrollPhysics {
+  const SwipePhysics({ScrollPhysics? parent}) : super(parent: parent);
+
+  @override
+  SwipePhysics applyTo(ScrollPhysics? ancestor) {
+    return SwipePhysics(parent: buildParent(ancestor));
+  }
+
+  @override
+  SpringDescription get spring => const SpringDescription(
+        mass: 80,
+        stiffness: 100,
+        damping: 1,
+      );
+}
+
 class _IndexPageState extends State<IndexPage> {
   int _currentPageIndex = 0;
   final _pageController = PageController();
@@ -54,8 +70,9 @@ class _IndexPageState extends State<IndexPage> {
             ),
           ],
         ),
-      ) ,
+      ),
       body: PageView(
+        physics: const SwipePhysics(),
         controller: _pageController,
         onPageChanged: (int index) {
           setState(() {
@@ -63,17 +80,17 @@ class _IndexPageState extends State<IndexPage> {
           });
         },
         children: <Widget>[
-          HomeWidget(),
-          HistoryWidget(),
-          StatsWidget(),
-          PersonWidget(),
+          const HomeWidget(),
+          const HistoryWidget(),
+          const StatsWidget(),
+          const PersonWidget(),
         ],
       ),
       bottomNavigationBar: NavigationBar(
         height: 64,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         onDestinationSelected: (int index) {
-          if(index != _currentPageIndex) {
+          if (index != _currentPageIndex) {
             setState(() {
               _currentPageIndex = index;
             });
