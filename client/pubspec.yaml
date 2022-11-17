@@ -1,27 +1,41 @@
 name: timecard
 description: The timecard client.
-publish_to: 'none'
+publish_to: "none"
 
 # A version number is three numbers separated by dots, like 1.2.43
 # followed by an optional build number separated by a +.
-version: 0.1.0+1
+version: 0.1.0+2
 
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: ">=2.17.0 <3.0.0"
+  flutter: ">=2.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   dynamic_color: ^1.5.4
-  http: ^0.13.5
   fluttertoast: ^8.1.1
+  flutter_native_splash: ^2.2.14
+  flutter_riverpod: ^2.1.1
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.10.0
   flutter_lints: ^2.0.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: assets/ta.png
+  web:
+    generate: true
+
+flutter_native_splash:
+  color: "#ff0000"
